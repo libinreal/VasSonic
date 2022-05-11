@@ -19,14 +19,17 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.view.View;
+//import android.support.annotation.NonNull;
+//import android.support.design.widget.FloatingActionButton;
+//import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.tencent.sonic.R;
 import com.tencent.sonic.sdk.SonicConfig;
 import com.tencent.sonic.sdk.SonicEngine;
@@ -60,54 +63,31 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         // clean up cache btn
-        Button btnReset = (Button) findViewById(R.id.btn_reset);
-        btnReset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SonicEngine.getInstance().cleanCache();
-            }
-        });
+        Button btnReset = findViewById(R.id.btn_reset);
+        btnReset.setOnClickListener(view -> SonicEngine.getInstance().cleanCache());
 
         // default btn
-        Button btnDefault = (Button) findViewById(R.id.btn_default_mode);
-        btnDefault.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startBrowserActivity(MODE_DEFAULT);
-            }
-        });
+        Button btnDefault = findViewById(R.id.btn_default_mode);
+        btnDefault.setOnClickListener(view -> startBrowserActivity(MODE_DEFAULT));
 
         // preload btn
-        Button btnSonicPreload = (Button) findViewById(R.id.btn_sonic_preload);
-        btnSonicPreload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SonicSessionConfig.Builder sessionConfigBuilder = new SonicSessionConfig.Builder();
-                sessionConfigBuilder.setSupportLocalServer(true);
+        Button btnSonicPreload = findViewById(R.id.btn_sonic_preload);
+        btnSonicPreload.setOnClickListener(view -> {
+            SonicSessionConfig.Builder sessionConfigBuilder = new SonicSessionConfig.Builder();
+            sessionConfigBuilder.setSupportLocalServer(true);
 
-                // preload session
-                boolean preloadSuccess = SonicEngine.getInstance().preCreateSession(DEMO_URL, sessionConfigBuilder.build());
-                Toast.makeText(getApplicationContext(), preloadSuccess ? "Preload start up success!" : "Preload start up fail!", Toast.LENGTH_LONG).show();
-            }
+            // preload session
+            boolean preloadSuccess = SonicEngine.getInstance().preCreateSession(DEMO_URL, sessionConfigBuilder.build());
+            Toast.makeText(getApplicationContext(), preloadSuccess ? "Preload start up success!" : "Preload start up fail!", Toast.LENGTH_LONG).show();
         });
 
         // sonic mode load btn
-        Button btnSonic = (Button) findViewById(R.id.btn_sonic);
-        btnSonic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startBrowserActivity(MODE_SONIC);
-            }
-        });
+        Button btnSonic = findViewById(R.id.btn_sonic);
+        btnSonic.setOnClickListener(view -> startBrowserActivity(MODE_SONIC));
 
         // load sonic with offline cache
-        Button btnSonicWithOfflineCache = (Button) findViewById(R.id.btn_sonic_with_offline);
-        btnSonicWithOfflineCache.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startBrowserActivity(MODE_SONIC_WITH_OFFLINE_CACHE);
-            }
-        });
+        Button btnSonicWithOfflineCache = findViewById(R.id.btn_sonic_with_offline);
+        btnSonicWithOfflineCache.setOnClickListener(view -> startBrowserActivity(MODE_SONIC_WITH_OFFLINE_CACHE));
 
         if (hasPermission()) {
             init();
@@ -117,18 +97,8 @@ public class MainActivity extends Activity {
 
         final UrlListAdapter urlListAdapter = new UrlListAdapter(MainActivity.this);
 
-        FloatingActionButton btnFab = (FloatingActionButton) findViewById(R.id.btn_fab);
-        btnFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                UrlSelector.launch(MainActivity.this, urlListAdapter, new UrlSelector.OnUrlChangedListener() {
-                    @Override
-                    public void urlChanged(String url) {
-                        DEMO_URL = url;
-                    }
-                });
-            }
-        });
+        FloatingActionButton btnFab = findViewById(R.id.btn_fab);
+        btnFab.setOnClickListener(view -> UrlSelector.launch(MainActivity.this, urlListAdapter, url -> DEMO_URL = url));
 
         DEMO_URL = urlListAdapter.getCheckedUrl();
     }
