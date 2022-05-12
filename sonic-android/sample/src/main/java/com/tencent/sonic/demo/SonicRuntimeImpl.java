@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * the sonic host application must implement SonicRuntime to do right things.
@@ -129,13 +130,22 @@ public class SonicRuntimeImpl extends SonicRuntime {
     @Override
     public File getSonicCacheDir() {
         if (BuildConfig.DEBUG) {
-            String path = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "sonic/";
+            String path;
+            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                path = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "sonic/";
+            } else {
+                //getExternalStorageDirectory在29已移除 如下 path:/storage/emulated/0/Android/data/com.tencent.sonic/sonic/
+                path = Objects.requireNonNull(Objects.requireNonNull(context.getExternalFilesDir(null)).getParentFile()).getAbsolutePath();
+                path = path + File.separator  + "sonic/";
+            }
             File file = new File(path.trim());
             if(!file.exists()){
                 file.mkdir();
             }
+            log("stephen", Log.INFO, "custom getSonicCacheDir ： " + path);
             return file;
         }
+        log("stephen", Log.INFO, "tencent getSonicCacheDir ： " + super.getSonicCacheDir().getPath());
        return super.getSonicCacheDir();
     }
 
